@@ -59,16 +59,23 @@
 
 {:alice {:tweets ["Hello world, again!"], :dms [], :follows #{}}, :bob {:tweets [], :dms [], :follows #{}}}
 
+(defn parse-mention [mention]
+  (-> mention
+      (subs 1)
+      s/lower-case
+      (s/replace #"[^a-z-_]" "")
+      keyword))
+
+(parse-mention "@blah_blah-blah!")
+
 (defn find-mentions
   [{:keys [message]}]
   (->> (s/split message #"\s+")
        (filter #(.startsWith % "@"))
-       (map #(subs % 1))
-       (map s/lower-case)
-       (map keyword)
+       (map parse-mention)
        set))
 
-(find-mentions {:message "Hello @Alice world"})
+(find-mentions {:message "@Alice!"})
 
 (defn post-tweet
   "Use update-in function in Clojure core to simplify updating a data structure"
@@ -83,6 +90,10 @@
                 mentions)
         
         (update-in [user :tweets] conj tweet-with-mentions))))
+
+(-> empty-world
+    (post-tweet {:message "Hi @alice!" :time 2} :bob)
+    (get-mentions :alice))
 
 (defn start-following
   [world follower followee]
@@ -126,8 +137,6 @@
 (defn get-mentions
   [world user]
   (get-in world [user :mentions]))
-
-
 
 
 
