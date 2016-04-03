@@ -61,7 +61,7 @@
   {:alice {:tweets []
            :dms []
            :follows #{}}
- 
+
    :bob {:tweets []
          :dms []
          :follows #{}}})
@@ -72,7 +72,7 @@
 
 ;; The above is the same as pulling data out of maps with keywords, for example:
 ;; (:tweets (:alice world))
-;; The get-in function makes the code more human readable and makes it possile to use the argument values passed to the function - in the above case user is replaced by 
+;; The get-in function makes the code more human readable and makes it possile to use the argument values passed to the function - in the above case user is replaced by
 
 ;; Test the code - although this will just return an empty vector as there are no tweets in the empty-world.  It does however show that we do get a vector as the return data structure.
 (get-user-tweets empty-world :alice)
@@ -92,7 +92,7 @@
   [world tweet user]
   (update-in world [user :tweets] conj tweet))
 
-;; Test the post-tweet function 
+;; Test the post-tweet function
 (post-tweet empty-world "Hello world, again!" :alice)
 
 ;; output from the above test code
@@ -135,18 +135,18 @@
   (let [mentions (find-mentions tweet)
         tweet-with-mentions (assoc tweet
                               :mentions mentions)]
-    
+
     (-> (reduce (fn [acc mentioned-user]
                   (update-in acc [mentioned-user :mentions] conj tweet-with-mentions))
                 world
                 mentions)
-        
+
         (update-in [user :tweets] conj tweet-with-mentions))))
 
 ;; Using the thread-first macro to write a simple test case (sans test framework)
-(-> empty-world
-    (post-tweet {:message "Hi @alice!" :time 2} :bob)
-    (get-mentions :alice))
+;; (-> empty-world
+;;    (post-tweet {:message "Hi @alice!" :time 2} :bob)
+;;    (get-mentions :alice))
 
 
 (defn start-following
@@ -171,7 +171,7 @@
         followees-tweets (mapcat #(get-user-tweets world %) followees)
         sorted-tweets (sort-by :time followees-tweets)]
     ;; keywords are functions that look themselves up in a map
-    
+
     (reverse sorted-tweets)))
 
 ;; A reworking of get-user-timeline above, using thread-last to make it much easier to read (reads more like the algorithm you have in your head as you write the function)
